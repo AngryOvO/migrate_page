@@ -1015,8 +1015,8 @@ static inline struct folio *folio_prealloc(struct mm_struct *src_mm,
 	folio_throttle_swaprate(new_folio, GFP_KERNEL);
 
 	/* hayong */
-	folio_reset_nid_access_count(new_folio);
-	new_folio->last_nid = NUMA_NO_NODE;
+	
+	
 	return new_folio;
 }
 
@@ -4930,10 +4930,9 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 	pte_t pte, old_pte;
 	int flags = 0;
 	/* hayong */
-	int cxl_node = 2;
+	// int cxl_node = 2;
 	int cpu_node;
-	int folio_nac;
-	
+
 
 	/*
 	 * The "pte" at this point cannot be used safely without
@@ -4999,17 +4998,28 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 		folio->nid_access_count : check this folio that is shared (count == 1 : shared / count > 1 : not shared)
 
 	*/
+
 	cpu_node = cpu_to_node(smp_processor_id());
-	if(folio->last_nid != cpu_node)
+
+	if(!folio->_nid_init) //_nid_init == 0
 	{
-		folio_reset_nid_access_count(folio);
+		folio->nid_access_count = 0;
+		folio->last_nid = -1;
+		folio_nid_init_set(folio);
 	}
 	else
 	{
-		folio_nac = folio_nid_access_count(folio);
+		if(folio->last_nid != cpu_node)
+		{
+			folio->nid_access_count = 1;
+			folio->last_nid = cpu_node;
+		}
+		else	
+		{
+			folio->nid_access_count++;
+		}
 	}
-	
-	folio->last_nid = cpu_node;
+
 	/*
 	
 		[hayong]
@@ -5038,7 +5048,8 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 
 	/*		[hayong]		*/
 	/* migrate shared folio to CXL node */
-	if((nid != folio->last_nid) && (folio_nac == 1)) {
+	/*
+	if((nid != folio->last_nid) && (folio->nid_access_count == 1)) {
 		if(migrate_misplaced_folio(folio, vma, cxl_node)) {
 			nid = cxl_node;
 			flags |= TNF_MIGRATED;
@@ -5047,7 +5058,7 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 			vmf->pte = pte_offset_map_lock(vma->vm_mm, vmf->pmd,
 					       vmf->address, &vmf->ptl);
 			if (unlikely(!vmf->pte))
-				goto out;
+				goto out; 
 			if (unlikely(!pte_same(ptep_get(vmf->pte), vmf->orig_pte))) {
 				pte_unmap_unlock(vmf->pte, vmf->ptl);
 				goto out;
@@ -5056,10 +5067,10 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 		}
 		printk(KERN_INFO "=== hayong === cxl migrate success");
 		goto out;
-	}
-/*		[hayong]		*/
+	} */
+			/*		[hayong]		*/
 
-
+	
 	if (migrate_misplaced_folio(folio, vma, target_nid)) {
 		nid = target_nid;
 		flags |= TNF_MIGRATED;
