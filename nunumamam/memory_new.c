@@ -5001,25 +5001,15 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 
 	cpu_node = cpu_to_node(smp_processor_id());
 
-	if(!folio->_nid_init) //_nid_init == 0
+	if(folio->last_nid != cpu_node)
 	{
-		folio->nid_access_count = 0;
-		folio->last_nid = -1;
-		folio_nid_init_set(folio);
+		folio->nid_access_count = 1;
+		folio->last_nid = cpu_node;
 	}
-	else
+	else	
 	{
-		if(folio->last_nid != cpu_node)
-		{
-			folio->nid_access_count = 1;
-			folio->last_nid = cpu_node;
-		}
-		else	
-		{
-			folio->nid_access_count++;
-		}
+		folio->nid_access_count++;
 	}
-
 	/*
 	
 		[hayong]

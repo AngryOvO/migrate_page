@@ -1186,12 +1186,6 @@ static inline int folio_entire_mapcount(struct folio *folio)
 	return atomic_read(&folio->_entire_mapcount) + 1;
 }
 
-/* [hayong] */
-static inline void folio_nid_init_set(struct folio *folio)
-{
-	atomic_set(&folio->_nid_init, 1);
-}
-
 /*
  * The atomic page->_mapcount, starts from -1: so that transitions
  * both from it and to it can be tracked, using atomic_inc_and_test

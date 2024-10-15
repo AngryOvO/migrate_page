@@ -357,7 +357,6 @@ struct folio {
 	};
 	unsigned int last_nid;
     unsigned int nid_access_count;
-	atomic_t _nid_init;
 };
 
 #define FOLIO_MATCH(pg, fl)						\
