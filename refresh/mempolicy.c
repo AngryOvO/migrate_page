@@ -2488,6 +2488,8 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 	int thisnid = cpu_to_node(thiscpu);
 	int polnid = NUMA_NO_NODE;
 	int ret = NUMA_NO_NODE;
+	int last_folio_cpupid = folio_last_cpupid(folio); // [hayong] added
+	int task_cpupid = cpu_pid_to_cpupid(thiscpu, current->pid); // [hayong] added
 
 	pol = get_vma_policy(vma, addr, folio_order(folio), &ilx);
 	if (!(pol->flags & MPOL_F_MOF))
@@ -2536,10 +2538,26 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 		BUG();
 	}
 
+
+
+
 	/* Migrate the folio towards the node whose CPU is referencing it */
 	if (pol->flags & MPOL_F_MORON) {
 		polnid = thisnid;
 
+		if(curnid != thisnid && last_folio_cpupid != task_cpupid)
+		{
+			if(should_numa_migrate_memory(current, folio, curnid, thiscpu, 1))
+			{
+				printk(KERN_INFO "== hayong == allow migrate page in node 2\n");
+				polnid = 2;
+			}
+
+		} // [hayong] added
+
+        // [hayong] check if the page is in a node that is valid for this policy
+        
+            
 		if (!should_numa_migrate_memory(current, folio, curnid,
 						thiscpu, 0))
 			goto out;
@@ -2550,9 +2568,7 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 out:
 	mpol_cond_put(pol);
 
-    // [hayong] check if the page is in a node that is valid for this policy
-    if(should_numa_migrate_memory(current, folio, curnid, thiscpu, 1))
-        printk(KERN_INFO "== hayong == allow migrate page in node 2\n");
+    
 
 	return ret;
 }
