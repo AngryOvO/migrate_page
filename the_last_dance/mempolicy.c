@@ -2488,8 +2488,6 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 	int thisnid = cpu_to_node(thiscpu);
 	int polnid = NUMA_NO_NODE;
 	int ret = NUMA_NO_NODE;
-	int last_folio_cpupid; // [hayong] added
-	int current_task_cpupid = cpu_pid_to_cpupid(thiscpu, current->pid);
 
 	pol = get_vma_policy(vma, addr, folio_order(folio), &ilx);
 	if (!(pol->flags & MPOL_F_MOF))
@@ -2537,33 +2535,21 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 	default:
 		BUG();
 	}
-		
 
 	/* Migrate the folio towards the node whose CPU is referencing it */
 	if (pol->flags & MPOL_F_MORON) {
 		polnid = thisnid;
 
-		if(curnid != thisnid && last_folio_cpupid != task_cpupid)
-		{
-			if(should_numa_migrate_memory(current, folio, curnid, thiscpu, 1))
-			{
-				printk(KERN_INFO "== hayong == allow migrate page in node 2\n");
-				polnid = 2;
-			}
-
-		} // [hayong] added
-
-        // [hayong] check if the page is in a node that is valid for this policy
-        
-            
 		if (!should_numa_migrate_memory(current, folio, curnid,
-						thiscpu,0))
+						thiscpu))
 			goto out;
 	}
 
+	if (curnid != polnid)
+		ret = polnid;
 out:
 	last_folio_cpupid = folio_xchg_last_cpupid(folio, current_task_cpupid);
-	if(!cpupid_match_pid(current, last_folio_cpupid) && folio_estimated_sharers(folio))
+	if(!cpupid_match_pid(current, last_folio_cpupid) && cpupid_match_pid(current, last_folio_cpupid))
 	{
 		polnid = 2;
 		if (curnid != polnid)
@@ -3089,5 +3075,3 @@ void mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol)
 		p += scnprintf(p, buffer + maxlen - p, ":%*pbl",
 			       nodemask_pr_args(&nodes));
 }
-
-

@@ -78,7 +78,7 @@
 #include <linux/ptrace.h>
 #include <linux/vmalloc.h>
 #include <linux/sched/sysctl.h>
-#include <linux/kernel.h>
+
 #include <trace/events/kmem.h>
 
 #include <asm/io.h>
@@ -87,7 +87,7 @@
 #include <linux/uaccess.h>
 #include <asm/tlb.h>
 #include <asm/tlbflush.h>
-#include <linux/kernel.h>
+
 #include "pgalloc-track.h"
 #include "internal.h"
 #include "swap.h"
@@ -4926,13 +4926,8 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 	int target_nid;
 	pte_t pte, old_pte;
 	int flags = 0;
-	int folio_last_cpupid_hy;
-	int folio_last_pid;
-	int task_pid;
-	int folio_nid_hy;
+	int cxl_flag = 0;
 
-	//int thiscpu = raw_smp_processor_id();
-	//int thisnid = cpu_to_node(thiscpu);
 	/*
 	 * The "pte" at this point cannot be used safely without
 	 * validation through pte_unmap_same(). It's of NUMA type but
@@ -4984,17 +4979,10 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 		flags |= TNF_SHARED;
 
 	nid = folio_nid(folio);
-	int before_nid = nid;
-	int before_folio_cpupid = folio_last_cpupid(folio);
-
 	/*
 	 * For memory tiering mode, cpupid of slow memory page is used
 	 * to record page access time.  So use default value.
-		*/
-
-	//if(nid == 0 && thisnid == 1)
-		//printk(KERN_INFO "folio 0 / task 1 / task pid = %d",current->pid);
-
+	 */
 	if ((sysctl_numa_balancing_mode & NUMA_BALANCING_MEMORY_TIERING) &&
 	    !node_is_toptier(nid))
 		last_cpupid = (-1 & LAST_CPUPID_MASK);
@@ -5005,35 +4993,21 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 		folio_put(folio);
 		goto out_map;
 	}
+	else if(target_nid == 2)
+		cxl_flag = 1;
 
-	
 	pte_unmap_unlock(vmf->pte, vmf->ptl);
 	writable = false;
 
-
-
-	/* Migrate to the requested node */
 	int cxl_flag;
 	if(target_nid == 2)
 		cxl_flag = 1;
 	else
 		cxl_flag = 0;
-
+		
+	/* Migrate to the requested node */
 	if (migrate_misplaced_folio(folio, vma, target_nid, cxl_flag)) {
 		nid = target_nid;
-		if(nid == 2)
-		{
-			folio_last_cpupid_hy = folio_last_cpupid(folio);
-			folio_last_pid = cpupid_to_pid(folio_last_cpupid_hy);
-			task_pid = current->pid;
-			folio_nid_hy = folio_nid(folio);
-			printk(KERN_INFO " == hayong == last_folio_pid = %d folio_nid = %d task_pid = %d\n",folio_last_pid, folio_nid_hy, task_pid);
-		}
-		if(nid == 1)
-		{
-			printk(KERN_INFO " before folio nid = %d last_folio_cpupid = %d",before_nid, before_folio_cpupid);
-		}
-
 		flags |= TNF_MIGRATED;
 	} else {
 		flags |= TNF_MIGRATE_FAIL;
@@ -6335,4 +6309,3 @@ void ptlock_free(struct ptdesc *ptdesc)
 	kmem_cache_free(page_ptl_cachep, ptdesc->ptl);
 }
 #endif
-

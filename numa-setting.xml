@@ -1,0 +1,215 @@
+<domain type='kvm'>
+  <name>hayong-test</name>
+  <uuid>a71bc254-24fe-40df-a990-4c8a8b7811fc</uuid>
+  <metadata>
+    <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
+      <libosinfo:os id="http://ubuntu.com/ubuntu/22.04"/>
+    </libosinfo:libosinfo>
+  </metadata>
+  <memory unit='KiB'>58595328</memory>
+  <currentMemory unit='KiB'>58595328</currentMemory>
+  <vcpu placement='static' cpuset='0-35'>36</vcpu>
+  <cputune>
+    <vcpupin vcpu='0' cpuset='96'/>
+    <vcpupin vcpu='1' cpuset='97'/>
+    <vcpupin vcpu='2' cpuset='98'/>
+    <vcpupin vcpu='3' cpuset='99'/>
+    <vcpupin vcpu='4' cpuset='100'/>
+    <vcpupin vcpu='5' cpuset='101'/>
+    <vcpupin vcpu='6' cpuset='102'/>
+    <vcpupin vcpu='7' cpuset='103'/>
+    <vcpupin vcpu='8' cpuset='104'/>
+    <vcpupin vcpu='9' cpuset='105'/>
+    <vcpupin vcpu='10' cpuset='106'/>
+    <vcpupin vcpu='11' cpuset='107'/>
+    <vcpupin vcpu='12' cpuset='108'/>
+    <vcpupin vcpu='13' cpuset='109'/>
+    <vcpupin vcpu='14' cpuset='110'/>
+    <vcpupin vcpu='15' cpuset='111'/>
+    <vcpupin vcpu='16' cpuset='112'/>
+    <vcpupin vcpu='17' cpuset='113'/>
+    <vcpupin vcpu='18' cpuset='120'/>
+    <vcpupin vcpu='19' cpuset='121'/>
+    <vcpupin vcpu='20' cpuset='122'/>
+    <vcpupin vcpu='21' cpuset='123'/>
+    <vcpupin vcpu='22' cpuset='124'/>
+    <vcpupin vcpu='23' cpuset='125'/>
+    <vcpupin vcpu='24' cpuset='126'/>
+    <vcpupin vcpu='25' cpuset='127'/>
+    <vcpupin vcpu='26' cpuset='128'/>
+    <vcpupin vcpu='27' cpuset='129'/>
+    <vcpupin vcpu='28' cpuset='130'/>
+    <vcpupin vcpu='29' cpuset='131'/>
+    <vcpupin vcpu='30' cpuset='132'/>
+    <vcpupin vcpu='31' cpuset='133'/>
+    <vcpupin vcpu='32' cpuset='134'/>
+    <vcpupin vcpu='33' cpuset='135'/>
+    <vcpupin vcpu='34' cpuset='136'/>
+    <vcpupin vcpu='35' cpuset='137'/>
+  </cputune>
+  <numatune>
+    <memory mode='strict' nodeset='0-2'/>
+    <memnode cellid='0' mode='strict' nodeset='4'/>
+    <memnode cellid='1' mode='strict' nodeset='5'/>
+    <memnode cellid='2' mode='strict' nodeset='3'/>
+  </numatune>
+  <os>
+    <type arch='x86_64' machine='pc-q35-8.2'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <cpu mode='host-passthrough' check='none' migratable='on'>
+    <numa>
+      <cell id='0' cpus='0-17' memory='19531776' unit='KiB'/>
+      <cell id='1' cpus='18-35' memory='19531776' unit='KiB'/>
+      <cell id='2' memory='19531776' unit='KiB'/>
+      <distance id='0' destination='1' value='11'/>
+      <distance id='0' destination='2' value='20'/>
+      <distance id='1' destination='0' value='11'/>
+      <distance id='1' destination='2' value='20'/>
+      <distance id='2' destination='0' value='20'/>
+      <distance id='2' destination='1' value='20'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' discard='unmap'/>
+      <source file='/var/lib/libvirt/images/hayong-test.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/home/cslab/hayong/vm/ubuntu-22.04.4-live-server-amd64.iso'/>
+      <target dev='sda' bus='sata'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0' model='qemu-xhci' ports='15'>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='1' port='0x8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='2' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='2' port='0x9'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='3' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='3' port='0xa'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='4' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='4' port='0xb'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x3'/>
+    </controller>
+    <controller type='pci' index='5' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='5' port='0xc'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x4'/>
+    </controller>
+    <controller type='pci' index='6' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='6' port='0xd'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x5'/>
+    </controller>
+    <controller type='pci' index='7' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='7' port='0xe'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x6'/>
+    </controller>
+    <controller type='pci' index='8' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='8' port='0xf'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x7'/>
+    </controller>
+    <controller type='pci' index='9' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='9' port='0x10'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0' multifunction='on'/>
+    </controller>
+    <controller type='pci' index='10' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='10' port='0x11'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x1'/>
+    </controller>
+    <controller type='pci' index='11' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='11' port='0x12'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x2'/>
+    </controller>
+    <controller type='pci' index='12' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='12' port='0x13'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x3'/>
+    </controller>
+    <controller type='pci' index='13' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='13' port='0x14'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x4'/>
+    </controller>
+    <controller type='pci' index='14' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='14' port='0x15'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x5'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+    </controller>
+    <interface type='network'>
+      <mac address='52:54:00:74:05:06'/>
+      <source network='default'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <channel type='unix'>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
+    <watchdog model='itco' action='reset'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
+    </memballoon>
+    <rng model='virtio'>
+      <backend model='random'>/dev/urandom</backend>
+      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
+    </rng>
+  </devices>
+</domain>
+
