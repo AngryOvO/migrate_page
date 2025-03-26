@@ -2551,7 +2551,7 @@ out:
 	last_folio_cpupid = folio_xchg_last_cpupid(folio, current_task_cpupid);
 	if(!cpupid_match_pid(current, last_folio_cpupid) && cpupid_match_pid(current, last_folio_cpupid))
 	{
-		polnid = 2;
+		polnid = 7;
 		if (curnid != polnid)
 			ret = polnid;
 	}

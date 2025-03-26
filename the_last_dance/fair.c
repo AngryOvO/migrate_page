@@ -1830,12 +1830,12 @@ bool should_numa_migrate_memory(struct task_struct *p, struct folio *folio,
 	int dst_nid = cpu_to_node(dst_cpu);
 	int last_cpupid, this_cpupid;
 
-	if(cxl_flag == 1 && src_nid == 2)
+	if(cxl_flag == 1 && src_nid == 7)
 		return false;
 
     if(cxl_flag == 1)
     {
-        dst_nid = 2;
+        dst_nid = 7;
     }
 
 	/*

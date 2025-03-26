@@ -4993,14 +4993,14 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 		folio_put(folio);
 		goto out_map;
 	}
-	else if(target_nid == 2)
+	else if(target_nid == 7)
 		cxl_flag = 1;
 
 	pte_unmap_unlock(vmf->pte, vmf->ptl);
 	writable = false;
 
 	int cxl_flag;
-	if(target_nid == 2)
+	if(target_nid == 7)
 		cxl_flag = 1;
 	else
 		cxl_flag = 0;
