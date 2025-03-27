@@ -4928,6 +4928,7 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 	int flags = 0;
 	int cxl_flag = 0;
 
+
 	/*
 	 * The "pte" at this point cannot be used safely without
 	 * validation through pte_unmap_same(). It's of NUMA type but
@@ -4993,7 +4994,7 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 		folio_put(folio);
 		goto out_map;
 	}
-	else if(target_nid == 7)
+	else if(target_nid == CXL_NODE)
 		cxl_flag = 1;
 
 	pte_unmap_unlock(vmf->pte, vmf->ptl);

@@ -2563,7 +2563,7 @@ int migrate_misplaced_folio(struct folio *folio, struct vm_area_struct *vma,
 	int nr_pages = folio_nr_pages(folio);
 	int folio_last_nid = folio_nid(folio);
 
-	if(folio_last_nid == 7)
+	if(folio_last_nid == CXL_NODE)
 		goto out;
 	/*
 	 * Don't migrate file folios that are mapped in multiple processes

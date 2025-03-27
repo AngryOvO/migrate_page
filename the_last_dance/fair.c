@@ -55,6 +55,8 @@
 #include "stats.h"
 #include "autogroup.h"
 
+#define CXL_NODE 2
+
 /*
  * The initial- and re-scaling of tunables is configurable
  *
@@ -1830,12 +1832,12 @@ bool should_numa_migrate_memory(struct task_struct *p, struct folio *folio,
 	int dst_nid = cpu_to_node(dst_cpu);
 	int last_cpupid, this_cpupid;
 
-	if(cxl_flag == 1 && src_nid == 7)
+	if(cxl_flag == 1 && src_nid == CXL_NODE)
 		return false;
 
     if(cxl_flag == 1)
     {
-        dst_nid = 7;
+        dst_nid = CXL_NODE;
     }
 
 
@@ -3091,11 +3093,6 @@ void task_numa_fault(int last_cpupid, int mem_node, int pages, int flags)
 	struct numa_group *ng;
 	int priv;
 
-
-	printk("[task_numa_fault] task_numa_fault mem_node %d   cpu node : %d   task's pid : %d \n",mem_node,cpu_node,p->pid);
-	printk("[task_numa_fault] after_cpupid = %d\n", last_cpupid);
-		//printk("[task_numa_fault] local  : %d   pages : %d\n",local,pages);
-			//printk("[task_numa_fault] remote : %lu  local : %lu  migrate fail : %lu \n",p->numa_faults_locality[0],p->numa_faults_locality[1],p->numa_faults_locality[2]);
 
 	if (!static_branch_likely(&sched_numa_balancing))
 		return;

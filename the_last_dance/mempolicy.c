@@ -2558,7 +2558,7 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 
 	if(cxl_flag)
 	{
-		polnid = 7;
+		polnid = CXL_NODE;
 		if (curnid != polnid)
 			ret = polnid;
 	}
