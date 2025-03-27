@@ -2488,6 +2488,8 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 	int thisnid = cpu_to_node(thiscpu);
 	int polnid = NUMA_NO_NODE;
 	int ret = NUMA_NO_NODE;
+	int last_folio_cpupid;
+	int current_task_cpupid = cpu_pid_to_cpupid(thiscpu, current->pid);
 
 	pol = get_vma_policy(vma, addr, folio_order(folio), &ilx);
 	if (!(pol->flags & MPOL_F_MOF))
