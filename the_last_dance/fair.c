@@ -1824,11 +1824,19 @@ static void numa_promotion_adjust_threshold(struct pglist_data *pgdat,
 }
 
 bool should_numa_migrate_memory(struct task_struct *p, struct folio *folio,
-				int src_nid, int dst_cpu)
+				int src_nid, int dst_cpu, int cxl_flag)
 {
 	struct numa_group *ng = deref_curr_numa_group(p);
 	int dst_nid = cpu_to_node(dst_cpu);
 	int last_cpupid, this_cpupid;
+
+	if(cxl_flag == 1 && src_nid == 7)
+		return false;
+
+    if(cxl_flag == 1)
+    {
+        dst_nid = 7;
+    }
 
 
 	/*
@@ -1897,8 +1905,17 @@ bool should_numa_migrate_memory(struct task_struct *p, struct folio *folio,
 	 * This quadric squishes small probabilities, making it less likely we
 	 * act on an unlikely task<->page relation.
 	 */
-	if (!cpupid_pid_unset(last_cpupid) && cpupid_to_nid(last_cpupid) != dst_nid)
-		return false;
+	if (!cpupid_pid_unset(last_cpupid) &&
+				cpupid_to_nid(last_cpupid) != dst_nid){
+		if(cxl_flag == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	/* Always allow migrate on private faults */
 	if (cpupid_match_pid(p, last_cpupid))
