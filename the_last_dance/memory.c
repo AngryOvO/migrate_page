@@ -4999,12 +4999,6 @@ static vm_fault_t do_numa_page(struct vm_fault *vmf)
 	pte_unmap_unlock(vmf->pte, vmf->ptl);
 	writable = false;
 
-	int cxl_flag;
-	if(target_nid == 7)
-		cxl_flag = 1;
-	else
-		cxl_flag = 0;
-		
 	/* Migrate to the requested node */
 	if (migrate_misplaced_folio(folio, vma, target_nid, cxl_flag)) {
 		nid = target_nid;

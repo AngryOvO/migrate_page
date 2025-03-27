@@ -2549,7 +2549,7 @@ int mpol_misplaced(struct folio *folio, struct vm_area_struct *vma,
 		ret = polnid;
 out:
 	last_folio_cpupid = folio_xchg_last_cpupid(folio, current_task_cpupid);
-	if(!cpupid_match_pid(current, last_folio_cpupid) && cpupid_match_pid(current, last_folio_cpupid))
+	if(!cpupid_match_pid(current, last_folio_cpupid) && folio_estimated_sharers(folio))
 	{
 		polnid = 7;
 		if (curnid != polnid)
